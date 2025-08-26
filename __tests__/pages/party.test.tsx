@@ -6,15 +6,6 @@ import { GameProvider, useGame } from '@/app/context/GameContext';
 import { Character } from '@/app/types/game';
 import React from 'react';
 
-// Mock Next.js Link component
-vi.mock('next/link', () => {
-  return {
-    default: function MockLink({ children, href, ...props }: { children: ReactNode; href: string }) {
-      return <a href={href} {...props}>{children}</a>;
-    }
-  };
-});
-
 const test_character_1: Character = {
   id: 'warrior_001',
   name: '戦士アレン',
