@@ -9,12 +9,10 @@ export default function HomePage() {
   const { get_party_size } = useGame();
   const [show_party_warning, set_show_party_warning] = useState(false);
 
-  const handle_dungeon_click = () => {
+  const handle_dungeon_click = (e: React.MouseEvent) => {
     if (get_party_size() < 3) {
+      e.preventDefault();
       set_show_party_warning(true);
-    } else {
-      // TODO: Navigate to dungeon selection
-      console.log('Navigate to dungeon selection');
     }
   };
 
@@ -44,12 +42,13 @@ export default function HomePage() {
             <p className="text-gray-600 mb-4">
               冒険に出かけましょう
             </p>
-            <button 
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            <Link 
+              href="/dungeons"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded inline-block text-center"
               onClick={handle_dungeon_click}
             >
               ダンジョン選択へ
-            </button>
+            </Link>
           </div>
         </div>
       </div>
