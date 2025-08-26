@@ -1,13 +1,9 @@
 import React from 'react';
 
-interface ImageProps {
+interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt'> {
   src: string;
   alt: string;
-  width?: number;
-  height?: number;
-  className?: string;
   priority?: boolean;
-  [key: string]: any;
 }
 
 const Image = ({ src, alt, width, height, className, ...props }: ImageProps) => {
