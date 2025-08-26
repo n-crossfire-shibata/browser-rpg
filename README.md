@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Browser RPG
 
-## Getting Started
+ブラウザで動作するRPGゲームです。
 
-First, run the development server:
+## 技術スタック
+
+- **Next.js 15.5.0** (React 19.1.0)
+- **TypeScript 5.x**
+- **Tailwind CSS 4.x**
+- **ESLint** (コード品質管理)
+
+## 開発環境セットアップ
+
+### 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 開発サーバー起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) でアプリケーションを確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### その他のコマンド
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# プロダクションビルド (Turbopack使用)
+npm run build
 
-## Learn More
+# プロダクションサーバー起動
+npm start
 
-To learn more about Next.js, take a look at the following resources:
+# リント実行
+npm run lint
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# テスト実行
+npm test
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ゲーム概要
 
-## Deploy on Vercel
+### ゲームフロー
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```mermaid
+flowchart TD
+    Start[スタート画面] --> Home[ホーム画面]
+    
+    Home --> Party[編成画面]
+    Party --> Home
+    
+    Home --> DungeonSelect[ダンジョン選択画面]
+    DungeonSelect --> Home
+    DungeonSelect --> Dungeon[ダンジョン画面]
+    
+    Dungeon --> Battle[戦闘画面]
+    Dungeon --> Event[イベント画面]
+    Event --> Dungeon
+    
+    Battle --> GameOver[ゲームオーバー画面]
+    GameOver --> Start
+    
+    Battle --> Result[リザルト画面]
+    Result --> Dungeon
+    Result --> DungeonClear[ダンジョンクリア画面]
+    Result --> GameClear[ゲームクリア画面]
+    
+    DungeonClear --> Home
+    GameClear --> Start
+    
+    classDef startEnd fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
+    classDef main fill:#4ecdc4,stroke:#333,stroke-width:2px,color:#fff
+    classDef dungeon fill:#45b7d1,stroke:#333,stroke-width:2px,color:#fff
+    classDef result fill:#96ceb4,stroke:#333,stroke-width:2px,color:#fff
+    
+    class Start,GameOver,DungeonClear,GameClear startEnd
+    class Home,Party,DungeonSelect main
+    class Dungeon,Battle,Event dungeon
+    class Result result
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 主要機能
+
+- パーティ編成システム
+- ダンジョン探索
+- ターンベース戦闘
+- イベントシステム
+- 進行管理（ダンジョンクリア・ゲームクリア）
+
+## 開発について
+
+- **App Router**: Next.js 15の最新App Routerを使用
+- **Turbopack**: 高速な開発・ビルド体験
+- **型安全性**: TypeScriptによる厳密な型チェック
+- **モダンスタイリング**: Tailwind CSS 4.xによるユーティリティファーストCSS
+
+詳細な開発ガイドは `CLAUDE.md` を参照してください。
