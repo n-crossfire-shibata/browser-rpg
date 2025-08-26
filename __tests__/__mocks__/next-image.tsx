@@ -8,6 +8,7 @@ interface ImageProps extends Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'sr
 
 const Image = ({ src, alt, width, height, className, ...props }: ImageProps) => {
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}

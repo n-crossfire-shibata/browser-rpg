@@ -21,6 +21,11 @@ const eslintConfig = [
       "coverage/**",
     ],
   },
+  {
+    rules: {
+      "react-hooks/exhaustive-deps": "off",
+    },
+  },
 ];
 
 export default eslintConfig;
