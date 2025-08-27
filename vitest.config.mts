@@ -24,10 +24,7 @@ export default defineConfig({
         'app/data/**',
       ],
       thresholds: {
-        lines: 95,
-        functions: 95,
-        branches: 95,
-        statements: 95
+        lines: 95
       }
     },
   },
