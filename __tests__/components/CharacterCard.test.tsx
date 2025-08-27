@@ -10,7 +10,8 @@ const test_character: Character = {
   max_hp: 100,
   job: '戦士',
   image: '/images/characters/warrior.svg',
-  flavor: 'テスト用のフレーバーテキスト'
+  flavor: 'テスト用のフレーバーテキスト',
+  cards: []
 };
 
 describe('CharacterCard', () => {

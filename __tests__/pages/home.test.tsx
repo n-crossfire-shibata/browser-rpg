@@ -25,7 +25,8 @@ const test_character_1: Character = {
   max_hp: 100,
   job: '戦士',
   image: '/images/characters/warrior.svg',
-  flavor: 'テスト用戦士'
+  flavor: 'テスト用戦士',
+  cards: []
 };
 
 const test_character_2: Character = {
@@ -35,7 +36,8 @@ const test_character_2: Character = {
   max_hp: 70,
   job: '魔法使い',
   image: '/images/characters/mage.svg',
-  flavor: 'テスト用魔法使い'
+  flavor: 'テスト用魔法使い',
+  cards: []
 };
 
 const test_character_3: Character = {
@@ -45,7 +47,8 @@ const test_character_3: Character = {
   max_hp: 80,
   job: '僧侶',
   image: '/images/characters/cleric.svg',
-  flavor: 'テスト用僧侶'
+  flavor: 'テスト用僧侶',
+  cards: []
 };
 
 function TestWrapper({ children, initial_party = [] }: { children: ReactNode; initial_party?: Character[] }) {

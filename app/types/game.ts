@@ -1,3 +1,5 @@
+import { Card } from './card';
+
 export interface Character {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export interface Character {
   job: string;
   image: string;
   flavor: string;
+  cards: Card[]; // キャラクター固有のカード（5枚）
 }
 
 export interface Party {

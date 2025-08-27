@@ -17,7 +17,8 @@ const test_characters: Character[] = [
     max_hp: 100,
     job: '戦士',
     image: '/images/characters/warrior.svg',
-    flavor: 'テスト用のフレーバーテキスト'
+    flavor: 'テスト用のフレーバーテキスト',
+    cards: []
   },
   {
     id: 'char_2',
@@ -26,7 +27,8 @@ const test_characters: Character[] = [
     max_hp: 80,
     job: '魔法使い',
     image: '/images/characters/mage.svg',
-    flavor: 'テスト用の魔法使い'
+    flavor: 'テスト用の魔法使い',
+    cards: []
   }
 ];
 
@@ -62,6 +64,7 @@ describe('SidePanel', () => {
     
     expect(screen.getByText('ゲーム情報')).toBeDefined();
     expect(screen.getByText('パーティー')).toBeDefined();
+    expect(screen.getByText('デッキ')).toBeDefined();
     expect(screen.getByText('アイテム')).toBeDefined();
     expect(screen.getByText('設定')).toBeDefined();
   });
@@ -79,6 +82,20 @@ describe('SidePanel', () => {
     expect(screen.getByText('現在のパーティー')).toBeDefined();
     expect(screen.getByText('テスト戦士')).toBeDefined();
     expect(screen.getByText('テスト魔法使い')).toBeDefined();
+  });
+
+  test('デッキタブで正しくコンテンツが表示されること', async () => {
+    const { useSidePanel } = vi.mocked(await import('@/app/hooks/useSidePanel'));
+    useSidePanel.mockReturnValue({
+      ...default_hook_return,
+      is_open: true,
+      active_tab: 'deck'
+    });
+    
+    render(<SidePanel party_members={test_characters} />);
+    
+    expect(screen.getByText('現在のデッキ')).toBeDefined();
+    expect(screen.getByText('カード構成')).toBeDefined();
   });
 
   test('inventoryタブで開発中メッセージが表示されること', async () => {

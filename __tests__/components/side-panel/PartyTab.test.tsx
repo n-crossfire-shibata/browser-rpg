@@ -11,7 +11,8 @@ const test_characters: Character[] = [
     max_hp: 100,
     job: '戦士',
     image: '/images/characters/warrior.svg',
-    flavor: 'テスト用のフレーバーテキスト'
+    flavor: 'テスト用のフレーバーテキスト',
+    cards: []
   },
   {
     id: 'char_2',
@@ -20,7 +21,8 @@ const test_characters: Character[] = [
     max_hp: 80,
     job: '魔法使い',
     image: '/images/characters/mage.svg',
-    flavor: 'テスト用の魔法使い'
+    flavor: 'テスト用の魔法使い',
+    cards: []
   },
   {
     id: 'char_3',
@@ -29,7 +31,8 @@ const test_characters: Character[] = [
     max_hp: 70,
     job: '盗賊',
     image: '/images/characters/thief.svg',
-    flavor: 'テスト用の盗賊'
+    flavor: 'テスト用の盗賊',
+    cards: []
   }
 ];
 

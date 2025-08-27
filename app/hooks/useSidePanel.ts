@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export type TabType = 'party' | 'inventory' | 'settings';
+export type TabType = 'party' | 'deck' | 'inventory' | 'settings';
 
 export function useSidePanel() {
   const [is_open, set_is_open] = useState(false);
