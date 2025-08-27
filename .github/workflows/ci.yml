@@ -34,14 +34,7 @@ jobs:
       run: npx tsc --noEmit
     
     - name: Run tests with coverage
-      run: npm run test:coverage
-    
-    - name: Vitest Coverage Report
-      uses: davelosert/vitest-coverage-report-action@v2
-      if: always()
-      with:
-        json-summary-path: './coverage/coverage-summary.json'
-        json-final-path: './coverage/coverage-final.json'
+      run: npm run test:coverage -- --coverage.thresholds.lines=95 --coverage.thresholds.functions=95 --coverage.thresholds.branches=95 --coverage.thresholds.statements=95
     
     - name: Build application
       run: npm run build
