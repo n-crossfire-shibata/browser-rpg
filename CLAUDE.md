@@ -21,6 +21,9 @@ npm start
 
 # リント実行
 npm run lint
+
+# TypeScript型チェック
+npx tsc --noEmit
 ```
 
 ### TypeScript設定

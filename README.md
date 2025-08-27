@@ -37,8 +37,14 @@ npm start
 # リント実行
 npm run lint
 
+# TypeScript型チェック
+npx tsc --noEmit
+
 # テスト実行
 npm test
+
+# カバレッジ付きテスト
+npm run test:coverage
 ```
 
 ## ゲーム概要
