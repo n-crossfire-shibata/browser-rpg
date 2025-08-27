@@ -6,6 +6,18 @@ import { GameProvider, useGame } from '@/app/context/GameContext';
 import { Character } from '@/app/types/game';
 import React from 'react';
 
+// Next.js Link コンポーネントのモック
+vi.mock('next/link', () => ({
+  default: ({ children, href, onClick, ...props }: { children: React.ReactNode; href: string; onClick?: (e: React.MouseEvent) => void; [key: string]: unknown }) => (
+    <a href={href} onClick={(e) => {
+      e.preventDefault(); // 実際の遷移を防ぐ
+      onClick?.(e);
+    }} {...props}>
+      {children}
+    </a>
+  )
+}));
+
 const test_character_1: Character = {
   id: 'test_1',
   name: 'テスト戦士',
@@ -90,7 +102,7 @@ describe('HomePage', () => {
       
       expect(screen.getByText('ダンジョン')).toBeDefined();
       expect(screen.getByText('冒険に出かけましょう')).toBeDefined();
-      expect(screen.getByRole('button', { name: 'ダンジョン選択へ' })).toBeDefined();
+      expect(screen.getByRole('link', { name: 'ダンジョン選択へ' })).toBeDefined();
     });
   });
 
@@ -102,8 +114,8 @@ describe('HomePage', () => {
         </TestWrapper>
       );
       
-      const dungeon_button = screen.getByRole('button', { name: 'ダンジョン選択へ' });
-      fireEvent.click(dungeon_button);
+      const dungeon_link = screen.getByRole('link', { name: 'ダンジョン選択へ' });
+      fireEvent.click(dungeon_link);
       
       expect(screen.getByText('パーティが不完全です')).toBeDefined();
       expect(screen.getByText('パーティーを3人編成してください')).toBeDefined();
@@ -116,8 +128,8 @@ describe('HomePage', () => {
         </TestWrapper>
       );
       
-      const dungeon_button = screen.getByRole('button', { name: 'ダンジョン選択へ' });
-      fireEvent.click(dungeon_button);
+      const dungeon_link = screen.getByRole('link', { name: 'ダンジョン選択へ' });
+      fireEvent.click(dungeon_link);
       
       expect(screen.getByText('パーティが不完全です')).toBeDefined();
       
@@ -129,22 +141,18 @@ describe('HomePage', () => {
   });
 
   describe('パーティが3人の場合', () => {
-    test('ダンジョンボタンクリックで警告モーダルが表示されないこと', () => {
-      const console_log_spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
+    test('ダンジョンリンククリックで警告モーダルが表示されないこと', () => {
       render(
         <TestWrapper initial_party={[test_character_1, test_character_2, test_character_3]}>
           <HomePage />
         </TestWrapper>
       );
       
-      const dungeon_button = screen.getByRole('button', { name: 'ダンジョン選択へ' });
-      fireEvent.click(dungeon_button);
+      const dungeon_link = screen.getByRole('link', { name: 'ダンジョン選択へ' });
+      fireEvent.click(dungeon_link);
       
       expect(screen.queryByText('パーティが不完全です')).toBeNull();
-      expect(console_log_spy).toHaveBeenCalledWith('Navigate to dungeon selection');
-      
-      console_log_spy.mockRestore();
+      expect(dungeon_link.getAttribute('href')).toBe('/dungeons');
     });
   });
 });
