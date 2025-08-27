@@ -20,6 +20,8 @@ export default defineConfig({
         '**/node_modules/**',
         '**/layout.tsx',
         '**/types/**',
+        'vitest/plugins/**',
+        'app/data/**',
       ],
     },
   },
