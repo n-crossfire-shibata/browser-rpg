@@ -7,6 +7,7 @@ const mockCard: Card = {
   id: 'test-card',
   name: 'テストカード',
   description: 'テスト用のカードです',
+  flavor: 'テスト環境で使用される基本的なカード。',
   cost: 2,
   type: 'attack',
   rarity: 'common',
@@ -92,8 +93,8 @@ describe('CardDisplay', () => {
   });
 
   test('should apply correct styling for different card types', () => {
-    const skillCard: Card = { ...mockCard, type: 'skill' };
-    const powerCard: Card = { ...mockCard, type: 'power' };
+    const skillCard: Card = { ...mockCard, type: 'skill', flavor: 'スキル系のテストカード。' };
+    const powerCard: Card = { ...mockCard, type: 'power', flavor: 'パワー系のテストカード。' };
     
     const { rerender } = render(<CardDisplay card={mockCard} />);
     expect(screen.getByText('攻撃')).toBeDefined();
@@ -106,9 +107,9 @@ describe('CardDisplay', () => {
   });
 
   test('should apply correct styling for different rarities', () => {
-    const uncommonCard: Card = { ...mockCard, rarity: 'uncommon' };
-    const rareCard: Card = { ...mockCard, rarity: 'rare' };
-    const legendaryCard: Card = { ...mockCard, rarity: 'legendary' };
+    const uncommonCard: Card = { ...mockCard, rarity: 'uncommon', flavor: 'アンコモンレアリティのテストカード。' };
+    const rareCard: Card = { ...mockCard, rarity: 'rare', flavor: 'レアレアリティのテストカード。' };
+    const legendaryCard: Card = { ...mockCard, rarity: 'legendary', flavor: '伝説レアリティのテストカード。' };
     
     const { rerender } = render(<CardDisplay card={mockCard} />);
     expect(screen.getByText('コモン')).toBeDefined();
@@ -127,6 +128,7 @@ describe('CardDisplay', () => {
     const cardWithNoEffects: Card = {
       ...mockCard,
       effects: [],
+      flavor: 'エフェクトのないテストカード。',
     };
     
     render(<CardDisplay card={cardWithNoEffects} />);
@@ -142,6 +144,7 @@ describe('CardDisplay', () => {
         { type: 'damage', value: 5, target: 'single_enemy' },
         { type: 'damage', value: 3, target: 'all_enemies' },
       ],
+      flavor: '複数エフェクトを持つテストカード。',
     };
     
     render(<CardDisplay card={cardWithMultipleEffects} />);

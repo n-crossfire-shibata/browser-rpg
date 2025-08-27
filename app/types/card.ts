@@ -25,6 +25,7 @@ export interface Card {
   id: string;
   name: string;
   description: string;
+  flavor: string;
   cost: number;
   type: CardType;
   rarity: CardRarity;
