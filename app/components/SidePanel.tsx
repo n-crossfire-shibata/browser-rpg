@@ -2,6 +2,7 @@
 
 import { useSidePanel } from '@/app/hooks/useSidePanel';
 import PartyTab from './side-panel/PartyTab';
+import DeckTab from './side-panel/DeckTab';
 import { Character } from '@/app/types/game';
 
 interface SidePanelProps {
@@ -10,6 +11,7 @@ interface SidePanelProps {
 
 const TAB_CONFIG = [
   { id: 'party' as const, label: 'パーティー', icon: '👥' },
+  { id: 'deck' as const, label: 'デッキ', icon: '🃏' },
   { id: 'inventory' as const, label: 'アイテム', icon: '🎒' },
   { id: 'settings' as const, label: '設定', icon: '⚙️' },
 ] as const;
@@ -21,6 +23,8 @@ export default function SidePanel({ party_members }: SidePanelProps) {
     switch (active_tab) {
       case 'party':
         return <PartyTab party_members={party_members} />;
+      case 'deck':
+        return <DeckTab party_members={party_members} />;
       case 'inventory':
         return (
           <div className="p-4 text-center text-gray-500">
@@ -59,12 +63,12 @@ export default function SidePanel({ party_members }: SidePanelProps) {
 
       {/* サイドパネル */}
       <div
-        className={`fixed top-0 right-0 h-full w-full md:w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 right-0 h-full w-full md:w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${
           is_open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* ヘッダー */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
           <h1 className="text-lg font-bold text-gray-800">ゲーム情報</h1>
           <button
             onClick={close_panel}
@@ -76,7 +80,7 @@ export default function SidePanel({ party_members }: SidePanelProps) {
         </div>
 
         {/* タブナビゲーション */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-200 flex-shrink-0">
           {TAB_CONFIG.map((tab) => (
             <button
               key={tab.id}
@@ -94,7 +98,7 @@ export default function SidePanel({ party_members }: SidePanelProps) {
         </div>
 
         {/* タブコンテンツ */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden min-h-0">
           {render_tab_content()}
         </div>
       </div>
