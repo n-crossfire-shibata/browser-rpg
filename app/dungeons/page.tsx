@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useGame } from '@/app/context/GameContext';
+import { useDungeon } from '@/app/context/DungeonContext';
 import { dungeons } from '@/app/data/dungeons';
 
 export default function DungeonSelectPage() {
   const router = useRouter();
-  const { start_dungeon } = useGame();
+  const { start_dungeon } = useDungeon();
   
   const handle_dungeon_select = (dungeon_id: string) => {
     console.log(`Selected dungeon: ${dungeon_id}`);

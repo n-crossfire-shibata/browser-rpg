@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useGame } from '@/app/context/GameContext';
+import { useParty } from '@/app/context/PartyContext';
 import { available_characters } from '@/app/data/characters';
 import CharacterCard from '@/app/components/CharacterCard';
 import { Character } from '@/app/types/game';
 
 export default function PartyPage() {
-  const { state, set_party_member, swap_party_members } = useGame();
+  const { state } = useGame();
+  const { set_party_member, swap_party_members } = useParty();
   const [dragged_character, set_dragged_character] = useState<Character | null>(null);
 
   const party_slots = Array.from({ length: 3 }, (_, index) => 

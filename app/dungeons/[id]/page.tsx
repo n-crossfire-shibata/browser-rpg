@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useGame } from '@/app/context/GameContext';
+import { useDungeon } from '@/app/context/DungeonContext';
 import { get_dungeon_by_id } from '@/app/data/dungeons';
 import { battle_card } from '@/app/data/action-cards';
 import { ActionCard } from '@/app/types/action-card';
@@ -25,7 +26,8 @@ export default function DungeonExplorePage() {
   const params = useParams();
   const dungeon_id = params.id as string;
   
-  const { state, start_dungeon, progress_floor, reset_dungeon } = useGame();
+  const { state } = useGame();
+  const { start_dungeon, progress_floor, reset_dungeon } = useDungeon();
   const dungeon = get_dungeon_by_id(dungeon_id);
   
   // ダンジョンが存在しない場合は即座にリダイレクト、存在する場合は開始
