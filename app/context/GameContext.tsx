@@ -3,6 +3,12 @@
 import { createContext, useContext, useReducer, ReactNode } from 'react';
 import { GameState, Character } from '@/app/types/game';
 
+class ExhaustiveError extends Error {
+  constructor(value: never, message = `Unsupported action type: ${JSON.stringify(value)}`) {
+    super(message);
+  }
+}
+
 interface GameContextType {
   state: GameState;
   add_party_member: (character: Character) => void;
@@ -11,6 +17,9 @@ interface GameContextType {
   swap_party_members: (from_index: number, to_index: number) => void;
   is_party_full: () => boolean;
   get_party_size: () => number;
+  start_dungeon: (dungeon_id: string, total_floors: number) => void;
+  progress_floor: () => void;
+  reset_dungeon: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -19,7 +28,10 @@ type GameAction =
   | { type: 'ADD_PARTY_MEMBER'; payload: Character }
   | { type: 'REMOVE_PARTY_MEMBER'; payload: string }
   | { type: 'SET_PARTY_MEMBER'; payload: { index: number; character: Character | null } }
-  | { type: 'SWAP_PARTY_MEMBERS'; payload: { from_index: number; to_index: number } };
+  | { type: 'SWAP_PARTY_MEMBERS'; payload: { from_index: number; to_index: number } }
+  | { type: 'START_DUNGEON'; payload: { dungeon_id: string; total_floors: number } }
+  | { type: 'PROGRESS_FLOOR' }
+  | { type: 'RESET_DUNGEON' };
 
 function game_reducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -82,9 +94,36 @@ function game_reducer(state: GameState, action: GameAction): GameState {
         };
       }
       return state;
+    case 'START_DUNGEON':
+      return {
+        ...state,
+        current_dungeon: action.payload.dungeon_id,
+        dungeon_progress: {
+          dungeon_id: action.payload.dungeon_id,
+          current_floor: 1,
+          remaining_floors: action.payload.total_floors,
+          total_floors: action.payload.total_floors
+        }
+      };
+    case 'PROGRESS_FLOOR':
+      if (!state.dungeon_progress) return state;
+      return {
+        ...state,
+        dungeon_progress: {
+          ...state.dungeon_progress,
+          current_floor: state.dungeon_progress.current_floor + 1,
+          remaining_floors: Math.max(0, state.dungeon_progress.remaining_floors - 1)
+        }
+      };
+    case 'RESET_DUNGEON':
+      return {
+        ...state,
+        current_dungeon: undefined,
+        dungeon_progress: undefined
+      };
     /* c8 ignore next 2 */
     default:
-      return state;
+      throw new ExhaustiveError(action);
   }
 }
 
@@ -117,6 +156,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const get_party_size = () => state.party.members.length;
 
+  const start_dungeon = (dungeon_id: string, total_floors: number) => {
+    dispatch({ type: 'START_DUNGEON', payload: { dungeon_id, total_floors } });
+  };
+
+  const progress_floor = () => {
+    dispatch({ type: 'PROGRESS_FLOOR' });
+  };
+
+  const reset_dungeon = () => {
+    dispatch({ type: 'RESET_DUNGEON' });
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -126,7 +177,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
         set_party_member,
         swap_party_members,
         is_party_full,
-        get_party_size
+        get_party_size,
+        start_dungeon,
+        progress_floor,
+        reset_dungeon
       }}
     >
       {children}

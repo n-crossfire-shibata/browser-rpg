@@ -22,6 +22,10 @@ export default defineConfig({
         '**/types/**',
         'vitest/plugins/**',
         'app/data/**',
+        'next-env.d.ts',
+        '**/*.d.ts',
+        '**/.next/**',
+        '**/static/**',
       ],
       thresholds: {
         lines: 95

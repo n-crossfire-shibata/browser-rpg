@@ -236,4 +236,56 @@ describe('GameContext', () => {
       expect(result.current.state.party.members).toEqual(original_members);
     });
   });
+
+  describe('ダンジョン機能', () => {
+    test('ダンジョンを開始できること', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+      
+      act(() => {
+        result.current.start_dungeon('test_dungeon', 10);
+      });
+      
+      expect(result.current.state.current_dungeon).toBe('test_dungeon');
+      expect(result.current.state.dungeon_progress).toEqual({
+        dungeon_id: 'test_dungeon',
+        current_floor: 1,
+        remaining_floors: 10,
+        total_floors: 10
+      });
+    });
+
+    test('フロアを進行できること', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+      
+      act(() => {
+        result.current.start_dungeon('test_dungeon', 10);
+        result.current.progress_floor();
+      });
+      
+      expect(result.current.state.dungeon_progress?.current_floor).toBe(2);
+      expect(result.current.state.dungeon_progress?.remaining_floors).toBe(9);
+    });
+
+    test('ダンジョンをリセットできること', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+      
+      act(() => {
+        result.current.start_dungeon('test_dungeon', 10);
+        result.current.reset_dungeon();
+      });
+      
+      expect(result.current.state.current_dungeon).toBeUndefined();
+      expect(result.current.state.dungeon_progress).toBeUndefined();
+    });
+
+    test('ダンジョン未開始時のフロア進行は何も起こらないこと', () => {
+      const { result } = renderHook(() => useGame(), { wrapper });
+      
+      act(() => {
+        result.current.progress_floor();
+      });
+      
+      expect(result.current.state.dungeon_progress).toBeUndefined();
+    });
+  });
 });

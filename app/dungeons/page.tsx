@@ -1,21 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { Dungeon } from '@/app/types/dungeon';
-
-const dungeons: Dungeon[] = [
-  {
-    id: 'hajimari-no-meikyuu',
-    name: 'はじまりの迷宮',
-    description: '冒険者が最初に挑戦するダンジョン。比較的安全で、基本的な戦闘を学べます。',
-    difficulty: '初級'
-  }
-];
+import { useRouter } from 'next/navigation';
+import { useGame } from '@/app/context/GameContext';
+import { dungeons } from '@/app/data/dungeons';
 
 export default function DungeonSelectPage() {
+  const router = useRouter();
+  const { start_dungeon } = useGame();
+  
   const handle_dungeon_select = (dungeon_id: string) => {
     console.log(`Selected dungeon: ${dungeon_id}`);
-    // TODO: Navigate to dungeon exploration
+    // ダンジョン初期化を先に実行
+    start_dungeon(dungeon_id, 30);
+    // その後ページ遷移
+    router.push(`/dungeons/${dungeon_id}`);
   };
 
   return (

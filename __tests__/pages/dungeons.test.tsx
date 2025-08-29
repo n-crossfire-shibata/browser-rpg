@@ -1,6 +1,8 @@
 import { expect, test, describe, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ReactNode } from 'react';
 import DungeonSelectPage from '@/app/dungeons/page';
+import { GameProvider } from '@/app/context/GameContext';
 
 // Next.js Link コンポーネントのモック
 vi.mock('next/link', () => {
@@ -15,15 +17,31 @@ vi.mock('next/link', () => {
   };
 });
 
+// Next.js useRouter のモック
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  })),
+}));
+
+function TestWrapper({ children }: { children: ReactNode }) {
+  return <GameProvider>{children}</GameProvider>;
+}
+
 describe('DungeonSelectPage', () => {
   describe('基本表示', () => {
     test('ページタイトルが表示されること', () => {
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       expect(screen.getByText('ダンジョン選択')).toBeDefined();
     });
 
     test('戻るボタンが表示されること', () => {
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       const back_link = screen.getByRole('link', { name: '← 戻る' });
       expect(back_link).toBeDefined();
       expect(back_link.getAttribute('href')).toBe('/home');
@@ -32,7 +50,7 @@ describe('DungeonSelectPage', () => {
 
   describe('ダンジョン表示', () => {
     test('はじまりの迷宮が表示されること', () => {
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       
       expect(screen.getByText('はじまりの迷宮')).toBeDefined();
       expect(screen.getByText('冒険者が最初に挑戦するダンジョン。比較的安全で、基本的な戦闘を学べます。')).toBeDefined();
@@ -41,7 +59,7 @@ describe('DungeonSelectPage', () => {
     });
 
     test('難易度バッジが正しく表示されること', () => {
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       
       const difficulty_badge = screen.getByText('初級');
       expect(difficulty_badge).toBeDefined();
@@ -54,7 +72,7 @@ describe('DungeonSelectPage', () => {
     test('ダンジョンカードクリックで選択処理が実行されること', () => {
       const console_log_spy = vi.spyOn(console, 'log').mockImplementation(() => {});
       
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       
       const dungeon_card = screen.getByText('はじまりの迷宮').closest('div');
       fireEvent.click(dungeon_card!);
@@ -67,7 +85,7 @@ describe('DungeonSelectPage', () => {
     test('挑戦ボタンクリックで選択処理が実行されること', () => {
       const console_log_spy = vi.spyOn(console, 'log').mockImplementation(() => {});
       
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       
       const challenge_button = screen.getByRole('button', { name: 'このダンジョンに挑戦する' });
       fireEvent.click(challenge_button);
@@ -80,7 +98,7 @@ describe('DungeonSelectPage', () => {
     test('挑戦ボタンクリック時にイベント伝播が停止されること', () => {
       const console_log_spy = vi.spyOn(console, 'log').mockImplementation(() => {});
       
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       
       const challenge_button = screen.getByRole('button', { name: 'このダンジョンに挑戦する' });
       fireEvent.click(challenge_button);
@@ -95,7 +113,7 @@ describe('DungeonSelectPage', () => {
 
   describe('レスポンシブデザイン', () => {
     test('グリッドレイアウトのクラスが正しく設定されていること', () => {
-      render(<DungeonSelectPage />);
+      render(<DungeonSelectPage />, { wrapper: TestWrapper });
       
       // ダンジョンカードの親要素（グリッドコンテナ）を取得
       const container = screen.getByText('ダンジョン選択').parentElement;
