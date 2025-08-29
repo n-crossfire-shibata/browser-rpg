@@ -2,12 +2,7 @@
 
 import { createContext, useContext, useReducer, ReactNode } from 'react';
 import { DungeonProgress } from '@/app/types/action-card';
-
-class ExhaustiveError extends Error {
-  constructor(value: never, message = `Unsupported action type: ${JSON.stringify(value)}`) {
-    super(message);
-  }
-}
+import { ExhaustiveError } from '@/app/lib/errors';
 
 interface DungeonState {
   current_dungeon?: string;
