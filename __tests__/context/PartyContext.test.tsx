@@ -1,9 +1,7 @@
 import { expect, test, describe } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { GameProvider, useGame } from '@/app/context/GameContext';
-import { useParty } from '@/app/context/PartyContext';
-import { useDungeon } from '@/app/context/DungeonContext';
+import { PartyProvider, useParty } from '@/app/context/PartyContext';
 import { Character } from '@/app/types/game';
 
 const test_character_1: Character = {
@@ -51,25 +49,13 @@ const test_character_4: Character = {
 };
 
 function wrapper({ children }: { children: ReactNode }) {
-  return <GameProvider>{children}</GameProvider>;
+  return <PartyProvider>{children}</PartyProvider>;
 }
 
-function useGameWithHooks() {
-  const gameContext = useGame();
-  const partyContext = useParty();
-  const dungeonContext = useDungeon();
-  return { 
-    ...gameContext, 
-    ...partyContext, 
-    ...dungeonContext,
-    party: partyContext.party
-  };
-}
-
-describe('GameContext', () => {
+describe('PartyContext', () => {
   describe('初期状態', () => {
     test('パーティが空であること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       expect(result.current.party.members).toEqual([]);
       expect(result.current.get_party_size()).toBe(0);
@@ -79,7 +65,7 @@ describe('GameContext', () => {
 
   describe('add_party_member', () => {
     test('キャラクターをパーティに追加できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -91,7 +77,7 @@ describe('GameContext', () => {
     });
 
     test('3人まで追加できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -104,7 +90,7 @@ describe('GameContext', () => {
     });
 
     test('3人を超えて追加しようとしても追加されないこと', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -120,7 +106,7 @@ describe('GameContext', () => {
 
   describe('remove_party_member', () => {
     test('キャラクターをパーティから削除できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -136,7 +122,7 @@ describe('GameContext', () => {
     });
 
     test('存在しないキャラクターの削除は何も起こらないこと', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -153,7 +139,7 @@ describe('GameContext', () => {
 
   describe('set_party_member', () => {
     test('指定位置にキャラクターを設定できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.set_party_member(0, test_character_1);
@@ -164,7 +150,7 @@ describe('GameContext', () => {
     });
 
     test('指定位置のキャラクターを削除できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -180,27 +166,25 @@ describe('GameContext', () => {
     });
 
     test('既存メンバーの間にキャラクターを挿入できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
-      // 最初に2人追加
       act(() => {
-        result.current.add_party_member(test_character_1); // index 0
-        result.current.add_party_member(test_character_2); // index 1
+        result.current.add_party_member(test_character_1);
+        result.current.add_party_member(test_character_2);
       });
       
-      // index 1の位置に新しいキャラクターを挿入
       act(() => {
         result.current.set_party_member(1, test_character_3);
       });
       
       expect(result.current.party.members).toHaveLength(3);
-      expect(result.current.party.members[0]).toEqual(test_character_1); // 元の位置
-      expect(result.current.party.members[1]).toEqual(test_character_3); // 挿入されたキャラ
-      expect(result.current.party.members[2]).toEqual(test_character_2); // 後ろにずれた
+      expect(result.current.party.members[0]).toEqual(test_character_1);
+      expect(result.current.party.members[1]).toEqual(test_character_3);
+      expect(result.current.party.members[2]).toEqual(test_character_2);
     });
 
     test('最大3人制限が適用されること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.set_party_member(0, test_character_1);
@@ -212,11 +196,27 @@ describe('GameContext', () => {
       expect(result.current.party.members).toHaveLength(3);
       expect(result.current.party.members.find(m => m.id === 'test_4')).toBeUndefined();
     });
+
+    test('範囲外のインデックスで削除しても何も起こらないこと', () => {
+      const { result } = renderHook(() => useParty(), { wrapper });
+      
+      act(() => {
+        result.current.add_party_member(test_character_1);
+      });
+      
+      const original_members = [...result.current.party.members];
+      
+      act(() => {
+        result.current.set_party_member(5, null);
+      });
+      
+      expect(result.current.party.members).toEqual(original_members);
+    });
   });
 
   describe('swap_party_members', () => {
     test('パーティメンバーの位置を入れ替えできること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -234,7 +234,7 @@ describe('GameContext', () => {
     });
 
     test('無効なインデックスでは何も起こらないこと', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      const { result } = renderHook(() => useParty(), { wrapper });
       
       act(() => {
         result.current.add_party_member(test_character_1);
@@ -249,57 +249,62 @@ describe('GameContext', () => {
       
       expect(result.current.party.members).toEqual(original_members);
     });
+
+    test('同じインデックス同士の入れ替えでも問題ないこと', () => {
+      const { result } = renderHook(() => useParty(), { wrapper });
+      
+      act(() => {
+        result.current.add_party_member(test_character_1);
+        result.current.add_party_member(test_character_2);
+      });
+      
+      const original_members = [...result.current.party.members];
+      
+      act(() => {
+        result.current.swap_party_members(0, 0);
+      });
+      
+      expect(result.current.party.members).toEqual(original_members);
+    });
   });
 
-  describe('ダンジョン機能', () => {
-    test('ダンジョンを開始できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+  describe('ユーティリティ関数', () => {
+    test('is_party_full が正しく動作すること', () => {
+      const { result } = renderHook(() => useParty(), { wrapper });
+      
+      expect(result.current.is_party_full()).toBe(false);
       
       act(() => {
-        result.current.start_dungeon('test_dungeon', 10);
+        result.current.add_party_member(test_character_1);
+        result.current.add_party_member(test_character_2);
       });
       
-      expect(result.current.state.current_dungeon).toBe('test_dungeon');
-      expect(result.current.state.dungeon_progress).toEqual({
-        dungeon_id: 'test_dungeon',
-        current_floor: 1,
-        remaining_floors: 10,
-        total_floors: 10
+      expect(result.current.is_party_full()).toBe(false);
+      
+      act(() => {
+        result.current.add_party_member(test_character_3);
       });
+      
+      expect(result.current.is_party_full()).toBe(true);
     });
 
-    test('フロアを進行できること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+    test('get_party_size が正しく動作すること', () => {
+      const { result } = renderHook(() => useParty(), { wrapper });
+      
+      expect(result.current.get_party_size()).toBe(0);
       
       act(() => {
-        result.current.start_dungeon('test_dungeon', 10);
-        result.current.progress_floor();
+        result.current.add_party_member(test_character_1);
       });
       
-      expect(result.current.state.dungeon_progress?.current_floor).toBe(2);
-      expect(result.current.state.dungeon_progress?.remaining_floors).toBe(9);
-    });
-
-    test('ダンジョンをリセットできること', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
+      expect(result.current.get_party_size()).toBe(1);
       
       act(() => {
-        result.current.start_dungeon('test_dungeon', 10);
-        result.current.reset_dungeon();
+        result.current.add_party_member(test_character_2);
+        result.current.add_party_member(test_character_3);
       });
       
-      expect(result.current.state.current_dungeon).toBeUndefined();
-      expect(result.current.state.dungeon_progress).toBeUndefined();
-    });
-
-    test('ダンジョン未開始時のフロア進行は何も起こらないこと', () => {
-      const { result } = renderHook(() => useGameWithHooks(), { wrapper });
-      
-      act(() => {
-        result.current.progress_floor();
-      });
-      
-      expect(result.current.state.dungeon_progress).toBeUndefined();
+      expect(result.current.get_party_size()).toBe(3);
     });
   });
 });

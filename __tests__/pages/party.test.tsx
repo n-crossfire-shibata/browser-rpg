@@ -2,7 +2,8 @@ import { expect, test, describe, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ReactNode } from 'react';
 import PartyPage from '@/app/party/page';
-import { GameProvider, useGame } from '@/app/context/GameContext';
+import { GameProvider } from '@/app/context/GameContext';
+import { useParty } from '@/app/context/PartyContext';
 import { Character } from '@/app/types/game';
 import React from 'react';
 
@@ -74,7 +75,7 @@ function TestWrapper({ children, initial_party = [] }: { children: ReactNode; in
 }
 
 function TestPartySetup({ initial_party }: { initial_party: Character[] }) {
-  const { set_party_member } = useGame();
+  const { set_party_member } = useParty();
   
   React.useEffect(() => {
     // set_party_memberを使って正確に制御

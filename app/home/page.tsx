@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useGame } from '@/app/context/GameContext';
+import { useParty } from '@/app/context/PartyContext';
 import Modal from '@/app/components/Modal';
 
 export default function HomePage() {
-  const { get_party_size } = useGame();
+  const { get_party_size } = useParty();
   const [show_party_warning, set_show_party_warning] = useState(false);
 
   const handle_dungeon_click = (e: React.MouseEvent) => {

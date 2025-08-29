@@ -1,4 +1,5 @@
 import { Card } from './card';
+import { DungeonProgress } from './action-card';
 
 export interface Character {
   id: string;
@@ -18,4 +19,5 @@ export interface Party {
 export interface GameState {
   party: Party;
   current_dungeon?: string;
+  dungeon_progress?: DungeonProgress;
 }
