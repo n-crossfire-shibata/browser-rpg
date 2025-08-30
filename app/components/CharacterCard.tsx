@@ -65,7 +65,7 @@ export default function CharacterCard({
     <div
       className={`w-full p-4 bg-white border rounded-lg shadow-md hover:shadow-lg transition-shadow ${
         is_draggable ? 'cursor-grab active:cursor-grabbing' : ''
-      }`}
+      } ${is_drop_zone ? 'hover:border-blue-400 hover:bg-blue-50' : ''}`}
       draggable={is_draggable}
       onDragStart={(e) => handle_drag_start(e, character)}
       onDragOver={is_drop_zone ? handle_drag_over : undefined}

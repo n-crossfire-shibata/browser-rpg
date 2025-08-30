@@ -172,6 +172,54 @@ describe('DungeonExplorePage - 軽量テスト', () => {
     });
   });
 
+  describe('戦闘への遷移', () => {
+    test('戦闘カードをクリックすると戦闘画面に遷移する', async () => {
+      const user = userEvent.setup();
+      
+      render(<DungeonExplorePage />, { wrapper: TestWrapper });
+      
+      // 通常表示を待つ
+      await waitFor(() => {
+        expect(screen.getByText('はじまりの迷宮')).toBeDefined();
+      });
+
+      // 戦闘カードをクリック
+      const battleCards = screen.getAllByText('戦闘');
+      expect(battleCards.length).toBeGreaterThan(0);
+      await user.click(battleCards[0]);
+
+      // 戦闘画面への遷移を確認
+      expect(mock_push).toHaveBeenCalledWith('/battle');
+    });
+
+    test('戦闘カード選択時に階層が進行する', async () => {
+      const user = userEvent.setup();
+      
+      render(<DungeonExplorePage />, { wrapper: TestWrapper });
+      
+      // 通常表示を待つ
+      await waitFor(() => {
+        expect(screen.getByText('はじまりの迷宮')).toBeDefined();
+        // 「残り階層:」と「30」が別々の要素にある可能性があるため、個別にチェック
+        expect(screen.getByText('残り階層:')).toBeDefined();
+        expect(screen.getByText('30')).toBeDefined();
+      });
+
+      // 戦闘カードをクリック
+      const battleCards = screen.getAllByText('戦闘');
+      await user.click(battleCards[0]);
+
+      // 階層が進行していることを確認（残り29階層）
+      await waitFor(() => {
+        expect(screen.getByText('残り階層:')).toBeDefined();
+        expect(screen.getByText('29')).toBeDefined();
+      });
+      
+      // 戦闘画面への遷移も確認
+      expect(mock_push).toHaveBeenCalledWith('/battle');
+    });
+  });
+
   describe('純粋関数のテスト', () => {
     test('battle_cardが正しくモックされていること', async () => {
       // モックされたbattle_cardの構造確認
