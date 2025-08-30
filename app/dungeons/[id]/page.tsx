@@ -58,11 +58,11 @@ export default function DungeonExplorePage() {
 
     progress_floor();
     
-    // TODO: 行動結果の処理を実装
+    // 行動結果の処理
     switch (action_card.type) {
       case 'battle':
-        // 戦闘画面への遷移またはバトル処理
-        alert(`${action_card.title}を選択しました。戦闘処理を実装予定。`);
+        // 戦闘画面への遷移
+        router.push('/battle');
         break;
       default:
         alert(`${action_card.title}を選択しました。処理を実装予定。`);

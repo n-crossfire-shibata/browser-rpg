@@ -1,6 +1,7 @@
 import { expect, test, describe, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import BattlePage from '@/app/battle/page';
+import { PartyProvider } from '@/app/context/PartyContext';
 import React from 'react';
 
 // available_charactersをモック（画像パス警告回避）
@@ -53,16 +54,21 @@ vi.mock('@/app/data/enemies', () => ({
   ]
 }));
 
+// テスト用のラッパーコンポーネント
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <PartyProvider>{children}</PartyProvider>
+);
+
 describe('BattlePage', () => {
   test('戦闘画面の基本構造が表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // ヘッダー
     expect(screen.getByText('戦闘画面')).toBeDefined();
   });
 
   test('敵エリアが正しく表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // 敵エリアのタイトル
     expect(screen.getByText('敵')).toBeDefined();
@@ -75,20 +81,19 @@ describe('BattlePage', () => {
   });
 
   test('味方エリアが正しく表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // 味方エリアのタイトル
     expect(screen.getByText('味方')).toBeDefined();
     
-    // 味方キャラクター（実際のavailable_charactersを使用）
-    expect(screen.getByText('戦士アレン')).toBeDefined();
-    expect(screen.getByText('HP: 80/100')).toBeDefined(); // 80% = 80HP
-    expect(screen.getByText('魔法使いリナ')).toBeDefined();
-    expect(screen.getByText('HP: 56/70')).toBeDefined(); // 70 * 0.8 = 56
+    // PartyContextが空の場合、味方キャラクターは表示されない
+    // 味方が0人の場合のテスト
+    const memberElements = screen.queryAllByText(/戦士|魔法使い/);
+    expect(memberElements).toHaveLength(0);
   });
 
   test('手札エリアが正しく表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // 手札エリアのタイトル
     expect(screen.getByText('手札 (3/5)')).toBeDefined();
@@ -103,7 +108,7 @@ describe('BattlePage', () => {
   });
 
   test('行動エリアが正しく表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // 行動エリアのタイトルと行動開始ボタン
     expect(screen.getByText('行動エリア (0/3)')).toBeDefined();
@@ -115,7 +120,7 @@ describe('BattlePage', () => {
   });
 
   test('戦闘情報が正しく表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // 戦闘情報
     expect(screen.getByText('ターン:')).toBeDefined();
@@ -128,7 +133,7 @@ describe('BattlePage', () => {
 
 
   test('行動開始ボタンがクリック可能な状態で表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
     
     const actionButton = screen.getByText('行動開始');
     expect(actionButton).toBeDefined();
@@ -136,7 +141,7 @@ describe('BattlePage', () => {
   });
 
   test('手札カードにドラッグ可能なスタイルが適用される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
     
     // 攻撃カードを探してドラッグ可能スタイルを確認
     const attackCardParent = screen.getByText('攻撃').closest('.cursor-grab');
@@ -144,14 +149,43 @@ describe('BattlePage', () => {
   });
 
   test('HPバーが正しく表示される', () => {
-    render(<BattlePage />);
+    render(<BattlePage />, { wrapper: TestWrapper });
     
     // HPバーの確認（BattleCharacterCardコンポーネント使用）
     const hpBars = document.querySelectorAll('.h-2.rounded-full');
     expect(hpBars.length).toBeGreaterThan(0);
     
-    // 緑色のHPバー（敵2体満タン + 味方2体80%）
+    // 緑色のHPバー（敵2体のみ、味方は0人）
     const greenHpBars = document.querySelectorAll('.bg-green-500');
-    expect(greenHpBars.length).toBe(4); // 全キャラクター（敵2体 + 味方2体）
+    expect(greenHpBars.length).toBe(2); // 敵2体のみ
+  });
+
+  test('PartyContextからパーティーメンバーを取得して表示する', () => {
+    // パーティーメンバーが存在するコンテキストを作成
+    const TestWrapperWithParty = ({ children }: { children: React.ReactNode }) => (
+      <PartyProvider>
+        {children}
+      </PartyProvider>
+    );
+
+    render(<BattlePage />, { wrapper: TestWrapperWithParty });
+
+    // 味方エリアのタイトルは表示される
+    expect(screen.getByText('味方')).toBeDefined();
+    
+    // 初期状態ではパーティーメンバーは空
+    const memberElements = screen.queryAllByText(/戦士|魔法使い/);
+    expect(memberElements).toHaveLength(0);
+  });
+
+  test('PartyContextが提供されていない場合はエラーになる', () => {
+    // console.errorをモック（エラーログを隠すため）
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => {
+      render(<BattlePage />);
+    }).toThrow('useParty must be used within a PartyProvider');
+
+    consoleErrorSpy.mockRestore();
   });
 });

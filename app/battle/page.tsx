@@ -1,15 +1,11 @@
 'use client';
 
 import BattleCharacterCard from './components/BattleCharacterCard';
-import { available_characters } from '@/app/data/characters';
+import { useParty } from '@/app/context/PartyContext';
 import { enemies } from '@/app/data/enemies';
 
 export default function BattlePage() {
-  // テスト用の味方キャラクター（最初の2人を使用、少しダメージを受けた状態）
-  const party = available_characters.slice(0, 2).map(char => ({
-    ...char,
-    hp: Math.floor(char.hp * 0.8) // HPを80%に減らしてダメージを表現
-  }));
+  const { party } = useParty();
 
   // テスト用の敵キャラクター
   const current_enemies = enemies;
@@ -51,7 +47,7 @@ export default function BattlePage() {
           <div className="bg-blue-900/30 rounded-lg p-4 border-2 border-blue-700">
             <h2 className="text-xl font-bold text-blue-300 mb-4">味方</h2>
             <div className="flex justify-center items-center space-x-4 min-h-[120px]">
-              {party.map((character) => (
+              {party.members.map((character) => (
                 <BattleCharacterCard
                   key={character.id}
                   character={character}
