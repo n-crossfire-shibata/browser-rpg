@@ -17,14 +17,12 @@ vi.mock('next/font/google', () => ({
 
 // レイアウトコンポーネントのロジック部分のみをテスト
 describe('Layout Providers', () => {
-  test('GameProviderとPartyProviderが正しくネストされる', () => {
+  test('GameProviderが正しく動作する（内部でPartyProviderを含む）', () => {
     const TestChild = () => <div data-testid="test-child">Test Content</div>;
     
     render(
       <GameProvider>
-        <PartyProvider>
-          <TestChild />
-        </PartyProvider>
+        <TestChild />
       </GameProvider>
     );
     
@@ -57,22 +55,20 @@ describe('Layout Providers', () => {
     expect(screen.getByTestId('game-test')).toBeDefined();
   });
 
-  test('プロバイダーのネスト順序が正しい（GameProvider > PartyProvider）', () => {
+  test('GameProviderが内部でPartyProviderを正しく包含している', () => {
     // 実際のコンテキストを使用するテスト子コンポーネント
     const ContextTestChild = () => {
       // エラーが発生しないことをテスト
-      return <div data-testid="context-nested-test">Nested Providers Work</div>;
+      return <div data-testid="context-nested-test">Context Providers Work</div>;
     };
     
     render(
       <GameProvider>
-        <PartyProvider>
-          <ContextTestChild />
-        </PartyProvider>
+        <ContextTestChild />
       </GameProvider>
     );
     
     expect(screen.getByTestId('context-nested-test')).toBeDefined();
-    expect(screen.getByText('Nested Providers Work')).toBeDefined();
+    expect(screen.getByText('Context Providers Work')).toBeDefined();
   });
 });

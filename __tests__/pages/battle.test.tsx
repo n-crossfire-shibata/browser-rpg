@@ -1,7 +1,7 @@
 import { expect, test, describe, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import BattlePage from '@/app/battle/page';
-import { PartyProvider } from '@/app/context/PartyContext';
+import { GameProvider } from '@/app/context/GameContext';
 import React from 'react';
 
 // available_charactersをモック（画像パス警告回避）
@@ -54,9 +54,9 @@ vi.mock('@/app/data/enemies', () => ({
   ]
 }));
 
-// テスト用のラッパーコンポーネント
+// テスト用のラッパーコンポーネント（GameProviderがPartyProviderを内包）
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <PartyProvider>{children}</PartyProvider>
+  <GameProvider>{children}</GameProvider>
 );
 
 describe('BattlePage', () => {
@@ -160,15 +160,9 @@ describe('BattlePage', () => {
     expect(greenHpBars.length).toBe(2); // 敵2体のみ
   });
 
-  test('PartyContextからパーティーメンバーを取得して表示する', () => {
-    // パーティーメンバーが存在するコンテキストを作成
-    const TestWrapperWithParty = ({ children }: { children: React.ReactNode }) => (
-      <PartyProvider>
-        {children}
-      </PartyProvider>
-    );
-
-    render(<BattlePage />, { wrapper: TestWrapperWithParty });
+  test('GameContextからパーティーメンバーを取得して表示する', () => {
+    // GameProviderを使用（内部でPartyProviderを含む）
+    render(<BattlePage />, { wrapper: TestWrapper });
 
     // 味方エリアのタイトルは表示される
     expect(screen.getByText('味方')).toBeDefined();
@@ -178,7 +172,7 @@ describe('BattlePage', () => {
     expect(memberElements).toHaveLength(0);
   });
 
-  test('PartyContextが提供されていない場合はエラーになる', () => {
+  test('GameProviderが提供されていない場合はエラーになる', () => {
     // console.errorをモック（エラーログを隠すため）
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
