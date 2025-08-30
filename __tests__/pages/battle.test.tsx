@@ -1,7 +1,57 @@
-import { expect, test, describe } from 'vitest';
+import { expect, test, describe, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import BattlePage from '@/app/battle/page';
 import React from 'react';
+
+// available_charactersをモック（画像パス警告回避）
+vi.mock('@/app/data/characters', () => ({
+  available_characters: [
+    {
+      id: 'warrior_001',
+      name: '戦士アレン',
+      hp: 100,
+      max_hp: 100,
+      job: '戦士',
+      image: '/images/characters/warrior.svg',
+      flavor: 'テスト用戦士',
+      cards: []
+    },
+    {
+      id: 'mage_001',
+      name: '魔法使いリナ',
+      hp: 70,
+      max_hp: 70,
+      job: '魔法使い',
+      image: '/images/characters/mage.svg',
+      flavor: 'テスト用魔法使い',
+      cards: []
+    }
+  ]
+}));
+
+// enemiesをモック（画像パス警告回避）
+vi.mock('@/app/data/enemies', () => ({
+  enemies: [
+    {
+      id: 'goblin-1',
+      name: 'ゴブリン',
+      hp: 50,
+      max_hp: 50,
+      image: '/images/enemies/goblin.svg',
+      ai_pattern: 'aggressive',
+      actions: []
+    },
+    {
+      id: 'orc-1',
+      name: 'オーク',
+      hp: 80,
+      max_hp: 80,
+      image: '/images/enemies/orc.svg',
+      ai_pattern: 'defensive',
+      actions: []
+    }
+  ]
+}));
 
 describe('BattlePage', () => {
   test('戦闘画面の基本構造が表示される', () => {
@@ -30,11 +80,11 @@ describe('BattlePage', () => {
     // 味方エリアのタイトル
     expect(screen.getByText('味方')).toBeDefined();
     
-    // モック味方キャラクター
-    expect(screen.getByText('戦士')).toBeDefined();
-    expect(screen.getByText('HP: 85/100')).toBeDefined();
-    expect(screen.getByText('魔法使い')).toBeDefined();
-    expect(screen.getByText('HP: 70/70')).toBeDefined();
+    // 味方キャラクター（実際のavailable_charactersを使用）
+    expect(screen.getByText('戦士アレン')).toBeDefined();
+    expect(screen.getByText('HP: 80/100')).toBeDefined(); // 80% = 80HP
+    expect(screen.getByText('魔法使いリナ')).toBeDefined();
+    expect(screen.getByText('HP: 56/70')).toBeDefined(); // 70 * 0.8 = 56
   });
 
   test('手札エリアが正しく表示される', () => {
@@ -96,12 +146,12 @@ describe('BattlePage', () => {
   test('HPバーが正しく表示される', () => {
     render(<BattlePage />);
     
-    // HPバーの確認（戦士のHPバー）
-    const hpBars = document.querySelectorAll('.bg-green-500.h-2.rounded-full');
+    // HPバーの確認（BattleCharacterCardコンポーネント使用）
+    const hpBars = document.querySelectorAll('.h-2.rounded-full');
     expect(hpBars.length).toBeGreaterThan(0);
     
-    // 敵のHPバー（満タン）
-    const enemyHpBars = document.querySelectorAll('.bg-red-500.h-2.rounded-full.w-full');
-    expect(enemyHpBars.length).toBe(2); // ゴブリンとオークの2体
+    // 緑色のHPバー（敵2体満タン + 味方2体80%）
+    const greenHpBars = document.querySelectorAll('.bg-green-500');
+    expect(greenHpBars.length).toBe(4); // 全キャラクター（敵2体 + 味方2体）
   });
 });

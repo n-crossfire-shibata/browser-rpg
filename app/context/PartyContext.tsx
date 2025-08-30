@@ -12,6 +12,10 @@ interface PartyContextType {
   swap_party_members: (from_index: number, to_index: number) => void;
   is_party_full: () => boolean;
   get_party_size: () => number;
+  update_character_hp: (character_id: string, new_hp: number) => void;
+  heal_character: (character_id: string, heal_amount: number) => void;
+  damage_character: (character_id: string, damage: number) => void;
+  get_character_is_alive: (character_id: string) => boolean;
 }
 
 const PartyContext = createContext<PartyContextType | undefined>(undefined);
@@ -20,7 +24,10 @@ type PartyAction =
   | { type: 'ADD_PARTY_MEMBER'; payload: Character }
   | { type: 'REMOVE_PARTY_MEMBER'; payload: string }
   | { type: 'SET_PARTY_MEMBER'; payload: { index: number; character: Character | null } }
-  | { type: 'SWAP_PARTY_MEMBERS'; payload: { from_index: number; to_index: number } };
+  | { type: 'SWAP_PARTY_MEMBERS'; payload: { from_index: number; to_index: number } }
+  | { type: 'UPDATE_CHARACTER_HP'; payload: { character_id: string; hp: number } }
+  | { type: 'HEAL_CHARACTER'; payload: { character_id: string; heal: number } }
+  | { type: 'DAMAGE_CHARACTER'; payload: { character_id: string; damage: number } };
 
 function party_reducer(state: Party, action: PartyAction): Party {
   switch (action.type) {
@@ -71,6 +78,33 @@ function party_reducer(state: Party, action: PartyAction): Party {
         };
       }
       return state;
+    case 'UPDATE_CHARACTER_HP':
+      return {
+        ...state,
+        members: state.members.map(member =>
+          member.id === action.payload.character_id
+            ? { ...member, hp: Math.max(0, Math.min(action.payload.hp, member.max_hp)) }
+            : member
+        )
+      };
+    case 'HEAL_CHARACTER':
+      return {
+        ...state,
+        members: state.members.map(member =>
+          member.id === action.payload.character_id
+            ? { ...member, hp: Math.min(member.hp + action.payload.heal, member.max_hp) }
+            : member
+        )
+      };
+    case 'DAMAGE_CHARACTER':
+      return {
+        ...state,
+        members: state.members.map(member =>
+          member.id === action.payload.character_id
+            ? { ...member, hp: Math.max(0, member.hp - action.payload.damage) }
+            : member
+        )
+      };
     /* c8 ignore next 2 */
     default:
       throw new ExhaustiveError(action);
@@ -104,6 +138,23 @@ export function PartyProvider({ children }: { children: ReactNode }) {
 
   const get_party_size = () => party.members.length;
 
+  const update_character_hp = (character_id: string, new_hp: number) => {
+    dispatch({ type: 'UPDATE_CHARACTER_HP', payload: { character_id, hp: new_hp } });
+  };
+
+  const heal_character = (character_id: string, heal_amount: number) => {
+    dispatch({ type: 'HEAL_CHARACTER', payload: { character_id, heal: heal_amount } });
+  };
+
+  const damage_character = (character_id: string, damage: number) => {
+    dispatch({ type: 'DAMAGE_CHARACTER', payload: { character_id, damage } });
+  };
+
+  const get_character_is_alive = (character_id: string): boolean => {
+    const character = party.members.find(member => member.id === character_id);
+    return character ? character.hp > 0 : false;
+  };
+
   return (
     <PartyContext.Provider
       value={{
@@ -113,7 +164,11 @@ export function PartyProvider({ children }: { children: ReactNode }) {
         set_party_member,
         swap_party_members,
         is_party_full,
-        get_party_size
+        get_party_size,
+        update_character_hp,
+        heal_character,
+        damage_character,
+        get_character_is_alive
       }}
     >
       {children}

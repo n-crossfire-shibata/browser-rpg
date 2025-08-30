@@ -1,6 +1,18 @@
 'use client';
 
+import BattleCharacterCard from './components/BattleCharacterCard';
+import { available_characters } from '@/app/data/characters';
+import { enemies } from '@/app/data/enemies';
+
 export default function BattlePage() {
+  // テスト用の味方キャラクター（最初の2人を使用、少しダメージを受けた状態）
+  const party = available_characters.slice(0, 2).map(char => ({
+    ...char,
+    hp: Math.floor(char.hp * 0.8) // HPを80%に減らしてダメージを表現
+  }));
+
+  // テスト用の敵キャラクター
+  const current_enemies = enemies;
   return (
     <div className="min-h-screen bg-gray-900 p-4">
       <div className="max-w-7xl mx-auto">
@@ -16,25 +28,22 @@ export default function BattlePage() {
           <div className="bg-red-900/30 rounded-lg p-4 border-2 border-red-700">
             <h2 className="text-xl font-bold text-red-300 mb-4">敵</h2>
             <div className="flex justify-center items-center space-x-4 min-h-[120px]">
-              {/* モック敵キャラクター */}
-              <div className="bg-red-800/50 rounded-lg p-3 w-28 h-32 border border-red-600 flex-shrink-0">
-                <div className="text-white text-center">
-                  <div className="text-sm font-bold">ゴブリン</div>
-                  <div className="text-xs mt-2">HP: 50/50</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div className="bg-red-500 h-2 rounded-full w-full"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-red-800/50 rounded-lg p-3 w-28 h-32 border border-red-600 flex-shrink-0">
-                <div className="text-white text-center">
-                  <div className="text-sm font-bold">オーク</div>
-                  <div className="text-xs mt-2">HP: 80/80</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div className="bg-red-500 h-2 rounded-full w-full"></div>
-                  </div>
-                </div>
-              </div>
+              {current_enemies.map((enemy) => (
+                <BattleCharacterCard
+                  key={enemy.id}
+                  character={{
+                    id: enemy.id,
+                    name: enemy.name,
+                    hp: enemy.hp,
+                    max_hp: enemy.max_hp,
+                    job: '敵',
+                    image: enemy.image,
+                    flavor: '',
+                    cards: []
+                  }}
+                  is_enemy={true}
+                />
+              ))}
             </div>
           </div>
 
@@ -42,25 +51,13 @@ export default function BattlePage() {
           <div className="bg-blue-900/30 rounded-lg p-4 border-2 border-blue-700">
             <h2 className="text-xl font-bold text-blue-300 mb-4">味方</h2>
             <div className="flex justify-center items-center space-x-4 min-h-[120px]">
-              {/* モック味方キャラクター */}
-              <div className="bg-blue-800/50 rounded-lg p-3 w-28 h-32 border border-blue-600 flex-shrink-0">
-                <div className="text-white text-center">
-                  <div className="text-sm font-bold">戦士</div>
-                  <div className="text-xs mt-2">HP: 85/100</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div className="bg-green-500 h-2 rounded-full" style={{width: '85%'}}></div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-blue-800/50 rounded-lg p-3 w-28 h-32 border border-blue-600 flex-shrink-0">
-                <div className="text-white text-center">
-                  <div className="text-sm font-bold">魔法使い</div>
-                  <div className="text-xs mt-2">HP: 70/70</div>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
-                    <div className="bg-green-500 h-2 rounded-full w-full"></div>
-                  </div>
-                </div>
-              </div>
+              {party.map((character) => (
+                <BattleCharacterCard
+                  key={character.id}
+                  character={character}
+                  is_enemy={false}
+                />
+              ))}
             </div>
           </div>
 
